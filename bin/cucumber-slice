@@ -2,4 +2,4 @@
 
 require 'cucumber_slice'
 
-CucumberSlice::Cli.new.run
+CucumberSlice::Cli.start(ARGV)
