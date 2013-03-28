@@ -14,6 +14,7 @@ module CucumberSlice
     end
 
     def format_feature_list(feature_list)
+      return '--tags "@no_features_to_run_thanks_cucumber_slice!"' if feature_list.empty?
       feature_list.join(" ")
     end
 
