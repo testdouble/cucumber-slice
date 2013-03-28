@@ -17,13 +17,13 @@ module CucumberSlice
       > $ cucumber-slice list --from a3989b6 --all true
 
     LONGDESC
-    option :from, :type => :string, :required => true, :banner => "REF"
+    option :from, :type => :string, :required => true, :banner => "REV"
     option :all, :type => :boolean, :default => false
     option :features, :default => "features", :aliases => ["f"]
     def list
-      puts "all: #{options[:all]}"
-      puts "from: #{options[:from]}"
-      puts "features: #{options[:features]}"
+      require 'cucumber_slice/lists_features'
+      features = ListsFeatures.new(options[:features], options[:from], !!options[:all])
+      puts features.list
     end
 
   end

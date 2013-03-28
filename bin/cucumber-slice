@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'cucumber_slice'
+require "cucumber_slice/cli"
 
 CucumberSlice::Cli.start(ARGV)
