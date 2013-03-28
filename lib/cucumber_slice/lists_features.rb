@@ -2,6 +2,7 @@ require 'git'
 
 module CucumberSlice
   module ListCore
+    #feature stuff
     def list_features_under(path)
       glob = if path.include?('*')
         path
@@ -9,11 +10,27 @@ module CucumberSlice
         File.join(path, "**/*.feature")
       end
 
-      Dir.glob(glob)
+      Dir.glob(File.join(git_repo_path, glob))
     end
 
     def format_feature_list(feature_list)
       feature_list.join(" ")
+    end
+
+    def dependencies_declared_in(feature_path)
+      dependencies = nil
+      File.open(feature_path) do |feature|
+        dependencies = feature.each_line.map do |line|
+          if match = line.match(/^#=\s*?depends_on (.*)$/)
+            match[1]
+          end
+        end.compact
+      end
+      dependencies
+    end
+
+    def any_dependencies_in_changeset?(dependencies, changeset)
+      (dependencies & changeset).any?
     end
 
     #file stuff
@@ -30,14 +47,26 @@ module CucumberSlice
       File.expand_path(path) == "/"
     end
 
+    def expand_globs(patterns)
+      expand_paths(patterns.map do |pattern|
+        Dir.glob(File.join(git_repo_path, pattern))
+      end.flatten).compact.uniq
+    end
+
+    def expand_paths(paths)
+      paths.map {|path| File.expand_path(path) }
+    end
+
     #git stuff
     def git_repo_path
-      find_up(Dir.pwd)
+      File.expand_path(find_up(Dir.pwd))
     end
 
     def files_changed_since(rev)
       git = Git.open(git_repo_path)
-      (diff_files(git, rev) + changed_files(git)).uniq
+      changed_files = diff_files(git, rev) + changed_files(git)
+
+      expand_paths(changed_files.map {|p| File.join(git_repo_path, p)}).uniq
     end
 
     def diff_files(git, since)
@@ -63,13 +92,11 @@ module CucumberSlice
       return format_feature_list(all_features) if @disabled
       changeset = files_changed_since(@rev)
 
-      filtered_features = all_features.select do |feature|
-        #read file
-        #look for ^#=\s+depends_on .*$
-        #expand all the depends_on paths
-        # return true if depends_on paths intersect with changeset paths
-      end
-      changeset #delete
+      format_feature_list(all_features.select do |feature_path|
+        dependency_patterns = dependencies_declared_in(feature_path)
+        dependency_paths = expand_globs(dependency_patterns)
+        any_dependencies_in_changeset?(dependency_paths, changeset)
+      end)
     end
   end
 end
