@@ -14,8 +14,14 @@ module CucumberSlice
     end
 
     def format_feature_list(feature_list)
-      return '--tags "@no_features_to_run_thanks_cucumber_slice!"' if feature_list.empty?
-      feature_list.join(" ")
+      if feature_list.empty?
+        #point to an empty file to insist cucumber not run anything.
+        #  cucumber's default behavior is to run everything when it's passed nothing.
+        #  Super hacky stuff.
+        File.expand_path(File.join(File.dirname(__FILE__), "empty_file"))
+      else
+        feature_list.join(" ")
+      end
     end
 
     def dependencies_declared_in(feature_path)
