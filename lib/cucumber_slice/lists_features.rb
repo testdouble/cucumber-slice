@@ -94,7 +94,7 @@ module CucumberSlice
 
       format_feature_list(all_features.select do |feature_path|
         dependency_patterns = dependencies_declared_in(feature_path)
-        dependency_paths = expand_globs(dependency_patterns)
+        dependency_paths = expand_globs(dependency_patterns) + [feature_path]
         any_dependencies_in_changeset?(dependency_paths, changeset)
       end)
     end
