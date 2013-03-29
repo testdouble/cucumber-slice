@@ -26,9 +26,9 @@ module CucumberSlice
       > $ cucumber-slice list --since a3989b6 --features "project/features"
 
     LONGDESC
-    option :since, :type => :string, :default => "HEAD", :banner => "REV"
-    option :all, :type => :boolean, :default => false
-    option :features, :default => "features", :aliases => ["f"]
+    method_option :since, :type => :string, :default => "HEAD", :banner => "REV"
+    method_option :all, :type => :boolean, :default => false
+    method_option :features, :default => "features", :aliases => ["f"]
     def list
       require 'cucumber_slice/lists_features'
       features = ListsFeatures.new(options[:features], options[:since], !!options[:all])
