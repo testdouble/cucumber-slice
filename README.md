@@ -1,6 +1,6 @@
 # CucumberSlice
 
-TODO: Write a gem description
+![hamster slicing a cucumber](https://cloud.githubusercontent.com/assets/79303/9820835/9c95d94e-5884-11e5-8aff-4f2919795871.gif)
 
 ## Installation
 
